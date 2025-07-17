@@ -17,6 +17,7 @@ window.onload = function () {
 
   function createCard(inputValue) {
     cardsContainer.innerHTML = '';
+    sortedCards.innerHTML = '';
     const icons = ['♦', '♥', '♠', '♣'];
     const cardNumbers = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'A', 'J', 'Q', 'K'];
     function randomContent(arr) {
@@ -24,11 +25,21 @@ window.onload = function () {
       return arr[indx]
     }
 
+    function setCardValue(number) {
+      if (number === 'A') return 1;
+      if (number === 'J') return 11;
+      if (number === 'Q') return 12;
+      if (number === 'K') return 13;
+      return number;
+    }
+
     for (let i = 0; i < inputValue; i++) {
 
       let theIcon = randomContent(icons)
       let theNumber = randomContent(cardNumbers);
+      let value = setCardValue(theNumber);
       const redStyle = theIcon == '♥' || theIcon == '♦' ? 'text-danger' : 'text-black';
+
       const oneCardContainer = document.createElement('div');
       const card = document.createElement('div');
       const cardTop = document.createElement('div');
@@ -48,12 +59,14 @@ window.onload = function () {
       card.appendChild(cardBase)
       oneCardContainer.appendChild(card)
       cardsContainer.appendChild(oneCardContainer)
-      arrTemp.push({ value: theNumber, suit: theIcon, element: oneCardContainer })
+
+      arrTemp.push({ value: value, suit: theIcon, element: oneCardContainer })
     }
-    console.log('la card como array', arrTemp.values)
+    console.log('la card como array', arrTemp.value)
   };
 
-  //cuando se presione draw va a dibujar las cartas
+
+
   cardsInput.addEventListener('submit', (e) => {
     e.preventDefault();
     cardsContainer.innerHTML = '';
@@ -65,34 +78,37 @@ window.onload = function () {
     }
   });
 
-  //cuando se presione sort va a organizar el array de cartas
+  function renderSortedCards() {
+    sortedCards.innerHTML = '';
+    arrTemp.forEach(cardObj => {
+      sortedCards.appendChild(cardObj.element);
+    });
+  }
 
+  function selectionSort() {
+    for (let i = 0; i < arrTemp.length; i++) {
+      let minIndex = i;
+      for (let j = i + 1; j < arrTemp.length; j++) {
+        if (arrTemp[j].value < arrTemp[minIndex].value) {
+          minIndex = j;
+        }
+      }
+      if (minIndex !== i) {
+        let temp = arrTemp[i];
+        arrTemp[i] = arrTemp[minIndex];
+        arrTemp[minIndex] = temp;
+      }
+      renderSortedCards();
 
+    }
+  }
 
   function sort() {
-    for (let a = 0; a <= arrTemp.length; a++) {
-
-
-      const selectSort = (arregloDeCartas) => {
-        let min = 0;
-        for (let i = min; i < arregloDeCartas.length - 1; i++) { //mientras haya que comparar
-          for (let ind = min + 1; ind < arregloDeCartas.length - 1; ind++) { //itera en el arreglo
-            if (arregloDeCartas[ind] > arregloDeCartas[ind + 1]) {
-              let aux = arregloDeCartas[ind]; //guarda temporalmente el indice actual
-              arregloDeCartas[ind] = arregloDeCartas[ind + 1] //ahora min toma el index actual que se esta recorrieno
-              arregloDeCartas[ind + 1] = aux // y aqui se hace el otro intercambio
-
-            }
-          }
-        }
-        return arregloDeCartas
-      }
-      console.log('selecttt', selectSort(arrTemp))
-      //debe agregar las lineas en sortedCards
+    if (arrTemp.length === 0) {
+      alert('Primero genera las cartas con Draw');
+      return;
     }
-
-
-
+    selectionSort();
 
   }
 
